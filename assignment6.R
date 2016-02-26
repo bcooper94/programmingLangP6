@@ -81,6 +81,55 @@ Env <- setClass(
 slots = c(values = "list"),
 prototype = list())
 
+isBinop <- function(input){
+	return(input == '+' || input == '-' || input == '*' || input == '/'
+		|| input == 'eq?' || input == '<=')
+}
+
+parseArgs <- function(argsList, start){
+	tempArgs = list()
+	for(i in start:length(argsList)){
+		tempArgs <- c(tempArgs, parse(unlist(argsList[i], recursive = FALSE)))
+	}
+	return(tempArgs)
+}
+
+parse <- function(input){
+   if(is(input, 'numeric')){
+      return(numC(num=input))
+   }
+   else if(is(input, 'logical')){
+   		if(input){
+   			return(trueC())
+   		}
+   		else{
+   			return(falseC())
+   		}
+   }
+   else if(is(input, 'character')){
+   		return(idC(symbol=input))
+   }
+   else if(is(input, 'list')){
+   		if(!is(unlist(input[1], recursive = FALSE), "list") && isBinop(unlist(input[1], recursive = FALSE))){
+   			return(binop(symbol=unlist(input[1], recursive = FALSE), left=parse(unlist(input[2], recursive = FALSE )),
+   			 right=parse(unlist(input[3], recursive = FALSE))))
+   		}
+   		else if(input[1] == 'if'){
+   			return(ifC(test=parse(unlist(input[2], recursive = FALSE)), thenBlock=parse(unlist(input[3], recursive = FALSE)),
+   			 elseBlock=parse(unlist(input[4], recursive = FALSE))))
+   		}
+   		else if(input[1] == 'func'){
+   			tempArgs = parseArgs(unlist(input[2], recursive=FALSE), 1)
+   			return(lamC(params=tempArgs, body=parse(unlist(input[length(input)], recursive=FALSE))))
+   		}
+   		else{
+   			tempArgs = parseArgs(input, 2)
+   			return(appC(fun=parse(unlist(input[1], recursive = FALSE)), args=tempArgs))
+   		}
+   }
+}
+
+
 interp <- function(expr, env) {
    if (is(expr, 'NumC')) {
       return(numV(num=expr@num))
@@ -169,6 +218,7 @@ lookup <- function(env, id) {
    }
 }
 
+print(parse(list('+', 3, 4)))
 #testEnv <- Env(values=list())
 #e <- environment()
 #assign('test', numV(num=-12), e)
