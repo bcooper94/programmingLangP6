@@ -38,13 +38,13 @@ slots = c(symbol = "character"),
 prototype = list(),
 contains = "ExprC")
 
-fdC <- setClass("FdC",
+lamC <- setClass("LamC",
 slots = c(params = "list",
 		body = "ExprC")
 prototype = list(),
 contains = "ExprC")
 
-interp = function(expr) {
+interp <- function(expr) {
    if (is(expr, 'NumC')) {
       #return(expr@num)
       return(expr@num)
@@ -55,14 +55,14 @@ interp = function(expr) {
    else if (is(expr, 'FalseC')) {
       print('FalseC')
    }
-   else if (is(expr, 'LambdaC')) {
-      print('LambdaC')
+   else if (is(expr, 'LamC')) {
+      print('LamC')
    }
    else if (is(expr, 'AppC')) {
 
    }
    else if (is(expr, 'IfC')) {
-
+      interpIf(expr)
    }
    else if (is(expr, 'BinopC')) {
 
@@ -73,6 +73,17 @@ interp = function(expr) {
    }
 }
 
-interpBinop = function(expr) {
+interpBinop <- function(expr) {
    #if (is())
 }
+
+interpIf <- function(expr) {
+   test <- expr@test
+   if (interp(expr@test)) {
+      return(interp(thenBlock))
+   }
+   else {
+      return(interp(elseBlock))
+   }
+}
+
