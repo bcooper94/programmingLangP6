@@ -44,6 +44,29 @@ slots = c(params = "list",
 prototype = list(),
 contains = "ExprC")
 
+Value <- setClass(
+"Value",
+slots = character(0),
+prototype=list())
+
+numV <- setClass(
+"numV",
+slots = c(num = "numeric"),
+prototype=list(),
+contains = "Value")
+
+boolV <- setClass(
+"boolV",
+slots = c(val = "logical"),
+prototype=list(),
+contains = "Value")
+
+closV <- setClass(
+"closV",
+slots = c(args = "list", body = "ExprC"),
+prototype=list(),
+contains = "Value")
+
 interp = function(expr) {
    if (is(expr, 'NumC')) {
       #return(expr@num)
