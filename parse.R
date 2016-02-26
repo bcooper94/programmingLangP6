@@ -1,3 +1,5 @@
+library(testthat)
+
 exprC <- setClass(
 "ExprC",
 slots = character(0),
@@ -121,11 +123,13 @@ parse <- function(input){
 }
 
 
-print(parse(list('if', TRUE, 3, 4)))
-print(isBinop('+'))
-print(parse(list('+', 3, 4)))
-print(parse(list (list("+", 'x', 'y'), 4, 5)))
-print(parse(list('func', list('x', 'y'), list('+', 2, 3))))
-print('TEST 6')
-print(parse(list('func', list('x', 'y'), list('+', list('-', 6, 1), 3))))
+#print(parse(list('if', TRUE, 3, 4)))
+#print(isBinop('+'))
+#print(parse(list('+', 3, 4)))
+#print(parse(list (list("+", 'x', 'y'), 4, 5)))
+#print(parse(list('func', list('x', 'y'), list('+', 2, 3))))
+#print('TEST 6')
+#print(parse(list('func', list('x', 'y'), list('+', list('-', 6, 1), 3))))
 
+expect_that(parse(10), is_a("NumC"))
+expect_that(parse(TRUE), is_a("NumC"))
