@@ -69,14 +69,13 @@ contains = "Value")
 
 interp <- function(expr) {
    if (is(expr, 'NumC')) {
-      #return(expr@num)
-      return(expr@num)
+      return(numV(num=expr@num))
    }
    else if (is(expr, 'TrueC')) {
-      print('TrueC')
+      return(boolV(val=TRUE))
    }
    else if (is(expr, 'FalseC')) {
-      print('FalseC')
+      return(boolV(val=FALSE))
    }
    else if (is(expr, 'LamC')) {
       print('LamC')
@@ -101,12 +100,18 @@ interpBinop <- function(expr) {
 }
 
 interpIf <- function(expr) {
-   test <- expr@test
-   if (interp(expr@test)) {
-      return(interp(thenBlock))
+   testVal <- interp(expr@test)
+
+   if (is(testVal, "boolV")) {
+      if (testVal@val) {
+         return(interp(thenBlock))
+      }
+      else {
+         return(interp(elseBlock))
+      }
    }
    else {
-      return(interp(elseBlock))
+      stop('InterpIf: test value is not a boolV')
    }
 }
 
