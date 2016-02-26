@@ -1,3 +1,8 @@
+exprC <- setClass("ExprC", 
+slots = character(0),
+prototype=list(),
+)
+
 trueC <- setClass("TrueC",
 slots = character(0),
 prototype=list(),
