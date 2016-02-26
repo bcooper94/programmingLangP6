@@ -1,0 +1,21 @@
+local({pkg <- select.list(sort(.packages(all.available = TRUE)),graphics=TRUE)
+ if(nchar(pkg)) library(pkg, character.only=TRUE)})
+
+testLeft <- numC(num=5)
+testRight <- numC(num=10)
+testTrue <- trueC()
+testFalse <- falseC()
+testBinop <- binop(symbol="+", left=testLeft, right=testRight)
+testEq <- binop(symbol="eq?", left=testLeft, right=testRight)
+testIf <- ifC(test=testEq, thenBlock=testTrue, elseBlock=testFalse)
+testIDx <- idC(symbol="x")
+testIDy <- idC(symbol="y")
+testBinopXY <- binop(symbol="*", left=testIDx, right=testIDy)
+testLambda <- lamC(params=list("x", "y"), body=testBinopXY)
+testApp <- appC(function=testLambda, args=list(numC(num=12), numC(num=6)))
+
+
+expect_equal(5, interp(testLeft))
+expect_equal(10, interp(testRight))
+expect_equal("TrueC", interp(testTrue))
+expect_equal("FalseC", interp(testFalse))
