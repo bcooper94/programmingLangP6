@@ -1,4 +1,6 @@
 library(methods)
+library(testthat)
+library(hash)
 
 exprC <- setClass("ExprC", 
 slots = character(0),
@@ -70,11 +72,16 @@ contains = "Value")
 
 closV <- setClass(
 "closV",
-slots = c(args = "list", body = "ExprC"),
+slots = c(args = "list", body = "ExprC", env = "environment"),
 prototype=list(),
 contains = "Value")
 
-interp <- function(expr) {
+Env <- setClass(
+"Env",
+slots = c(values = "list"),
+prototype = list())
+
+interp <- function(expr, env) {
    if (is(expr, 'NumC')) {
       return(numV(num=expr@num))
    }
@@ -85,10 +92,10 @@ interp <- function(expr) {
       return(boolV(val=FALSE))
    }
    else if (is(expr, 'LamC')) {
-      print('LamC')
+      return(closV(args=expr@params, body=expr@body, env=env))
    }
    else if (is(expr, 'AppC')) {
-
+      interpApp(expr, env)
    }
    else if (is(expr, 'IfC')) {
       interpIf(expr)
@@ -97,8 +104,9 @@ interp <- function(expr) {
 
    }
    else {
-      # create IdC
-      print('IdC')
+      print(class(expr))
+      cat('looking up: ', expr@symbol, '\n')
+      return(get(expr@symbol, env))
    }
 }
 
@@ -122,3 +130,52 @@ interpIf <- function(expr) {
    }
 }
 
+interpApp <- function(expr, env) {
+   func <- interp(expr@func, env)
+   #print(cat('env: ', names(func@env)))
+
+   if (is(func, 'closV')) {
+      params <- func@args
+      allArgs <- expr@args
+      funcBody <- func@body
+      numParams <- length(params)
+      print(cat('params: ', numParams, '\n'))
+
+      for (index in 1:numParams) {
+         print(cat('index', index, '\n'))
+         print(allArgs[index])
+         assign(params[index], interp(allArgs[index], func@env))
+      }
+
+      return(interp(funcBody, func@env))
+   }
+}
+
+createIdC <- function(id, env) {
+   #newEnv <- extendEnv(env, expr, )
+}
+
+extendEnv <- function(env, id, expr) {
+   assign(id, expr, env)
+}
+
+lookup <- function(env, id) {
+   cat('looking up', id)
+   if (id %in% names(env)) {
+      return(get(id, env))
+   }
+   else {
+      stop('Could not find id in Env')
+   }
+}
+
+#testEnv <- Env(values=list())
+#e <- environment()
+#assign('test', numV(num=-12), e)
+#assign('meh', boolV(val=TRUE), e)
+#interp(idC(symbol='test'), e)
+
+#e2 <- environment()
+#lam1 <- lamC(params=list('x', 'y'), body=trueC())
+#args1 <- list(numC(num=12), numC(num=-3))
+#interp(appC(func=lam1, args=args1), e2)
