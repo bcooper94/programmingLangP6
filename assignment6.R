@@ -1,3 +1,5 @@
+library(methods)
+
 exprC <- setClass("ExprC", 
 slots = character(0),
 prototype=list(),
@@ -28,13 +30,13 @@ contains = "ExprC")
 ifC <- setClass("IfC",
 slots = c(test = "ExprC",
 		thenBlock = "ExprC",
-		elseBlock = "ExprC")
+		elseBlock = "ExprC"),
 prototype = list(),
 contains = "ExprC")
 
 appC <- setClass("AppC",
-slots = c(function = "ExprC",
-		args = "list")
+slots = c(func = "ExprC",
+		args = "list"),
 prototype = list(),
 contains = "ExprC")
 
@@ -45,7 +47,7 @@ contains = "ExprC")
 
 lamC <- setClass("LamC",
 slots = c(params = "list",
-		body = "ExprC")
+		body = "ExprC"),
 prototype = list(),
 contains = "ExprC")
 
@@ -109,10 +111,10 @@ interpIf <- function(expr) {
 
    if (is(testVal, "boolV")) {
       if (testVal@val) {
-         return(interp(thenBlock))
+         return(interp(expr@thenBlock))
       }
       else {
-         return(interp(elseBlock))
+         return(interp(expr@elseBlock))
       }
    }
    else {
