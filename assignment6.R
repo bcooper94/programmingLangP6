@@ -159,9 +159,60 @@ interp <- function(expr, env) {
    }
 }
 
-interpBinop <- function(expr) {
-   #if (is())
+interpBinop <- function(symbol, left, right) {
+   if (is(left, 'NumC') && is(right, 'NumC'))
+   {
+     if (symbol == "+") {
+        return(numV(num=left@num + right@num))
+     }
+     else if (symbol == "-") {
+        return(numV(num=left@num - right@num))
+     }
+     else if (symbol == "*") {
+        return(numV(num=left@num * right@num))
+     }
+     else if (symbol == "/") {
+        if (right@num == 0) {
+           stop('InterpBinop: right side is 0 while dividing')
+        } else {
+           return(numV(num=left@num / right@num))
+        }
+     }
+     else if (symbol == "eq?") {
+        if (left@num == right@num) {
+           return(boolV(val=TRUE))
+        }
+        else {
+           return(boolV(val=FALSE))
+	}
+     }
+     else if (symbol == "<=") {
+        if (left@num <= right@num) {
+           return(boolV(val=TRUE))
+        }
+        else {
+           return(boolV(val=FALSE))
+	}
+     }
+     else {
+        stop('InterpBinop: binary operation is not supported')
+     }
+   }
+   else if (symbol == "eq?") {
+        if ((is(left, 'TrueC') || is(left, 'FalseC')) && (is(right, 'TrueC') || is(right, 'FalseC'))) {
+           if(class(left) == class(right)) {
+              return(boolV(val=TRUE))
+           }
+           else {
+              return(boolV(val=FALSE))
+	   }
+        }
+        else {
+           return(boolV(val=FALSE))
+	}
+   }
 }
+
 
 interpIf <- function(expr) {
    testVal <- interp(expr@test)
