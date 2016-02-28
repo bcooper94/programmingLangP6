@@ -150,7 +150,7 @@ interp <- function(expr, env) {
       interpIf(expr)
    }
    else if (is(expr, 'BinopC')) {
-
+	interpBinop(expr@symbol, expr@left, expr@right)
    }
    else {
       print(class(expr))
@@ -269,7 +269,12 @@ lookup <- function(env, id) {
    }
 }
 
-print(parse(list('+', 3, 4)))
+topEval <- function(lst) {
+	interp(parse(lst), environment())
+}
+
+topEval(list('+', 3, 4))
+
 #testEnv <- Env(values=list())
 #e <- environment()
 #assign('test', numV(num=-12), e)
@@ -280,3 +285,9 @@ print(parse(list('+', 3, 4)))
 #lam1 <- lamC(params=list('x', 'y'), body=trueC())
 #args1 <- list(numC(num=12), numC(num=-3))
 #interp(appC(func=lam1, args=args1), e2)
+
+
+interp(parse(5), environment())
+interp(binop(symbol='+', left=numC(num=5), right = numC(num=4)))
+topEval(list('+', 3, list('-', 20, 5)))
+
